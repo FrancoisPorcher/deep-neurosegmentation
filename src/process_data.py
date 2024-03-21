@@ -20,7 +20,10 @@ def add_iteration_i_to_name(filename, i):
     if filename.endswith('.nii.gz'):
         # Insert '_iteration_1' before '.nii.gz'
         new_name = filename[:-7] + '_iteration_' + str(i) + '.nii.gz'
-    return new_name
+        return new_name
+    else:
+        print(f"Filename {filename} does not end with '.nii.gz'")
+    
 
 def copy_and_rename_files_with_iteration(input_path, output_path, iteration_number):
     """
@@ -36,21 +39,28 @@ def copy_and_rename_files_with_iteration(input_path, output_path, iteration_numb
     # List all files in the input directory
     for filename in sorted(os.listdir(input_path)):
         # Generate the new filename with the iteration number
-        new_filename = add_iteration_i_to_name(filename, iteration_number)
+        if filename.endswith('.nii.gz'):
+            new_filename = add_iteration_i_to_name(filename, iteration_number)
 
-        # Define the old and new file paths
-        old_file_path = os.path.join(input_path, filename)
-        new_file_path = os.path.join(output_path, new_filename)
+            # Define the old and new file paths
+            old_file_path = os.path.join(input_path, filename)
+            new_file_path = os.path.join(output_path, new_filename)
 
-        # Copy the file from the old path to the new path
-        if os.path.isfile(old_file_path):  # Ensure it's a file, not a directory
-            shutil.copy2(old_file_path, new_file_path)
-            print(f"Copied and renamed {filename} to {new_filename}")
+            # Copy the file from the old path to the new path
+            if os.path.isfile(old_file_path):  # Ensure it's a file, not a directory
+                shutil.copy2(old_file_path, new_file_path)
+                print(f"Copied and renamed {filename} to {new_filename}")
+        else:
+            print(f"Filename {filename} does not end with '.nii.gz'")
             
-def process_dbb_files(input_path, output_path):
-    for iteration_number in [1,2,3]:
+def process_dbb_files(output_path):
+    # Assuming `config` is accessible within this function
+    iterations = [(config.ITERATION_1_PATH, 1), (config.ITERATION_2_PATH, 2), (config.ITERATION_3_PATH, 3)]
+
+    for input_path, iteration_number in iterations:
         copy_and_rename_files_with_iteration(input_path, output_path, iteration_number)
+
         
         
 if __name__ == '__main__':
-    process_dbb_files(config.DBB_DATA_PATH, config.PROCESSED_DBB_DATA_PATH)
+    process_dbb_files(output_path = config.PROCESSED_DBB_DATA_PATH)

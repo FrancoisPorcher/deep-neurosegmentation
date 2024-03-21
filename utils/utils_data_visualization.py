@@ -1,13 +1,12 @@
 import matplotlib.pyplot as plt
-
-from .data_loading import *
+from .utils_data_loading import *
 # from ipywidgets import widgets, interactive_output, display
 from ipywidgets import widgets, interactive_output
 from IPython.display import display
+import numpy as np
+from matplotlib.colors import ListedColormap
 
-
-
-def visualize_t1_scan(im_data=None, im_path=None, axis=0):
+def visualize_dbb_t1_scan(im_data=None, im_path=None, axis=0):
     """
     Visualizes slices of a T1 image interactively, either from image data or a file path.
     
@@ -64,4 +63,52 @@ def visualize_t1_scan(im_data=None, im_path=None, axis=0):
     interactive_plot = widgets.interactive_output(plot_slice, {'slice_idx': slice_slider})
     
     # Display the slider and the output together
+    display(slice_slider, interactive_plot)
+
+def visualize_minbboggle_triplet(im_data1=None, im_path1=None, im_data2=None, im_path2=None, im_data3=None, im_path3=None, axis=0):
+    """
+    Visualizes slices of up to three images interactively, including input data, segmentation data, and optionally ground truth data.
+    """
+    # Assuming a function load_nifti_data is defined elsewhere to load image data
+    
+    # Create a custom colormap for the segmentation data
+    colors = [(0, 0, 0), (0.5, 0.5, 0.5), (1, 1, 1), (1, 0.647, 0), (1, 0, 0)]  # black, grey, white, orange, red
+    cmap = ListedColormap(colors)
+    
+    images = [(im_data1, 'Input Data'), (im_data2, 'Segmentation Data'), (im_data3, 'Ground Truth Data')]
+    images = [(data, title) for data, title in images if data is not None]  # Filter out None data
+
+    if not images:
+        raise ValueError("At least one image data must be provided.")
+    
+    num_slices = images[0][0].shape[axis]
+    
+    def plot_slices(slice_idx):
+        n_images = len(images)
+        fig, axes = plt.subplots(1, n_images, figsize=(6 * n_images, 6))
+        if n_images == 1:
+            axes = [axes]  # Make axes iterable
+        
+        for ax, (im_data, title) in zip(axes, images):
+            if axis == 0:
+                slice_im = im_data[slice_idx, :, :]
+            elif axis == 1:
+                slice_im = im_data[:, slice_idx, :]
+            else:
+                slice_im = im_data[:, :, slice_idx]
+            
+            if 'Segmentation' in title:  # Apply custom colormap for segmentation data
+                ax.imshow(slice_im, cmap=cmap, vmin=0, vmax=len(colors)-1)
+            else:
+                ax.imshow(slice_im, cmap='gray')
+            
+            ax.set_title(title)
+            ax.axis('off')
+        
+        plt.tight_layout()
+        plt.show()
+    
+    slice_slider = widgets.IntSlider(min=0, max=num_slices-1, step=1, value=num_slices//2, description='Slice Index')
+    interactive_plot = interactive_output(plot_slices, {'slice_idx': slice_slider})
+    
     display(slice_slider, interactive_plot)
