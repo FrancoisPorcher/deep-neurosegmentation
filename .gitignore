@@ -1,1 +1,58 @@
-data/*
+# Ignore data folders and files
+/data/
+/nnunet/nnUNet_preprocessed/
+/nnunet/nnUNet_raw/
+/nnunet/nnUNet_results/
+
+/data/raw/
+/data/processed/
+/data/raw/BrainLife/
+/data/raw/mindboggle/
+/data/raw/Synaptive/
+/data/processed/mindboggle/
+/data/raw/BrainLife/DBB_jakob/
+/data/raw/BrainLife/proj-60a14ca503bcad0ad27cada9/
+/data/raw/mindboggle/Extra-18_volumes.tar.gz
+/data/raw/mindboggle/MMRR-21_volumes.tar.gz
+/data/raw/mindboggle/NKI-RS-22_volumes.tar.gz
+/data/raw/mindboggle/NKI-TRT-20_volumes.tar.gz
+/data/raw/mindboggle/OASIS-TRT-20_volumes.tar.gz
+/data/raw/Synaptive/segmentation
+/data/raw/Synaptive/Surgical_Data
+
+# Ignore Python cache files
+__pycache__/
+/*.py[cod]
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore specific files
+temp.ipynb
+
+# Ignore environment files
+env/
+venv/
+/*.env
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore cluster job output files
+*.out
+*.err
+*.log
+
+# Ignore config files
+config.ini
+
