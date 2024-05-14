@@ -4,6 +4,9 @@
 /nnunet/nnUNet_raw/
 /nnunet/nnUNet_results/
 
+.vscode/
+
+
 /data/raw/
 /data/processed/
 /data/raw/BrainLife/

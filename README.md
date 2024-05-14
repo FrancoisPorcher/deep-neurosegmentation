@@ -121,7 +121,15 @@ nnUNetv2_plan_and_preprocess -d 1 --verify_dataset_integrity
 
 ## Training nnUNet
 
-To train the nnUNet model, you can run the following command:
+To train the nnUNet model, you can run the `train_model.sh` script in the `./cluster_scripts` folder. 
+
+By default: the `train_model.sh` script will train the model on the MindBoggle dataset with the 3d_fullres network and all folds.
+
+You should edit this file to train on the dataset you want. 
+
+Here are the guidelines:
+
+This `train_model.sh` bash script will call the `nnUNetv2_train` command with the corresponding dataset, network, and fold.
 
 The general command is:
 
