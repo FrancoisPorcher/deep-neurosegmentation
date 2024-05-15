@@ -22,6 +22,26 @@ The Deep-Neurosegmentation project utilizes the Distorted Brain Benchmark (DBB) 
 
 Data augmentation has been applied to labels and synthetic brain images to generate paired outputs, creating three iterations for a more extensive training dataset.
 
+## Mindboggle Dataset
+
+### References
+
+### Legend
+
+## DBB Dataset
+
+### References
+
+### Legend
+
+## Feta dataset
+
+### References
+
+### Legend
+
+
+
 ## Environment
 To create the environment `neurosegmentation`, run the following command:
 ```bash
@@ -37,7 +57,7 @@ To install Pytorch, run the following command:
 ```bash
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
 ```
-Install nnunetv2 with:
+Install `nnunetv2` with:
 
 ```bash
 pip install nnunetv2
@@ -62,102 +82,90 @@ To prepare the directory structure for your data, run the `setup_data_processed.
 
 ### Creating Directories
 
-To create directory structures for specific datasets, you can run the script with the desired folder names as arguments. For example:
-
-```bash
-python setup_data_processed.py mindboggle feta dbb dbb_augmented
-```
-
-
-This will create the following directory structure:
+Before switching to the nnunet, I advise to use the following data structure:
 
 ```bash
 data/
+├── raw/
+│   ├── dataset_1/
+│   └── dataset_2/
 └── processed/
-    ├── mindboggle/
-    │   ├── ground_truth/
-    │   ├── input/
-    │   └── segmentation/
-    ├── feta/
-    │   ├── ground_truth/
-    │   ├── input/
-    │   └── segmentation/
-    ├── dbb/
-    │   ├── ground_truth/
-    │   ├── input/
-    │   └── segmentation/
-    └── dbb_augmented/
-        ├── ground_truth/
-        ├── input/
-        └── segmentation/
+│   ├── dataset_1/
+│   │   ├── ground_truth/
+│   │   ├── input/
+│   │   └── segmentation/
+│   ├── dataset_2/
+│   │   ├── ground_truth/
+│   │   ├── input/
+│   │   └── segmentation/
 ```
-
-
-### Overwriting Existing Directories
-
-By default, the script will not overwrite existing directories. If you want to force the script to overwrite existing directories and their contents, use the `-o` or `--overwrite` flag:
-
-```bash
-python setup_data_processed.py mindboggle feta dbb dbb_augmented -o
-```
-
-
-This command will overwrite any existing directories for `mindboggle`, `feta`, `dbb`, and `dbb_augmented`.
-
-### Directory Structure Explanation
-
-The script creates the following subdirectories for each specified folder:
-
-- `ground_truth`: Directory for ground truth data.
-- `input`: Directory for input data.
-- `segmentation`: Directory for segmentation data.
-
-## Placing Raw Data
-
-You should first place your raw data in the `data/raw` folder. After processing the data to ensure it has a homogeneous format and consistent file extensions, move the processed data to the corresponding subdirectories in the `data/processed` folder.
-
-### Example
-
-To create a directory structure for the `mindboggle` and `feta` datasets without overwriting existing directories, run:
-
-```bash
-python setup_data_processed.py mindboggle feta
-```
-
-
-To create and overwrite the directory structure for all four datasets (`mindboggle`, `feta`, `dbb`, `dbb_augmented`), run:
-
-```bash
-python setup_data_processed.py mindboggle feta dbb dbb_augmented -o
-```
-
-
-By following these instructions, you can set up the directory structure needed for data preprocessing efficiently.
-
-
+- `raw`: You can place your raw data in this directory.
+- `processed`: You should move your processed data to this directory.
+- `processed/dataset_1/ground_truth`: Directory for ground truth data. This is often continuous data, and needs some processing before it can be used a segmentation target (which has a finite set of integer classes)
+- `processed/dataset_1/input`: Directory for input data (for example T1, T2 scans)
+- `processed/dataset_1/segmentation`: Directory for segmentation data. This is often discrete data, and can be used as a segmentation target.
 
 
 # nnUNet
 
-## Set up the data structure for nnUNet
+Now we can switch to the nnUNet framework to train and evaluate the models.
 
-To setup nnUnetV2 data structure, go in the nnunet folder and run
+## Guideline on the data structure conventions
+
+The nnUNet framework requires a very specific way to name the files, so I have included the scripts.
+At the time I am writing this (2024-05-15), the guidelines are the following:
+- There are 3 folders:
+  - `nnUNet_raw`: Contains the raw data.
+  - `nnUNet_preprocessed`: Contains the preprocessed data.
+  - `nnUNet_results`: Contains the results of the nnUNet model.
+- in the `nnUNet_raw`, you need to identify the dataset with a number (1 for MindBoggle, 2 for DBB, 3 for DBB_augmented, 4 for Feta).
+
+within the dataset folder, you need to have the following structure:
+
 ```bash
-cd nnunet
-python setup_nnunet.py
+nnUNet_raw/
+├── dataset_1/
+│   ├── imagesTr/
+│   ├── imagesTs/
+│   ├── labelsTr/
 ```
 
+within the "imagesTr" there is a strict naming convention:
 
-To setup nnUNetV2 data structure plus specific datasets (MindBoggle, DBB, etc.), run the following command:
+file_name_patient_id_modality_id
+
+A few examples:
+
+mindboggle_0010_0000.nii.gz
+
+means that its subject id 10, with modality 0 (usually modality 0 is T1).
+
+So you can have for example:
+mindboggle_0010_0000.nii.gz (subject id, modality T1)
+mindboggle_0010_0001.nii.gz (subject id 10, but different modality, for example T2)
+mindboggle_0011_0000.nii.gz (subject id 11, modality T1)
+
+I distilled the essential here, but the nnunet framework is updated regularly, so I advise you to check their github repository:
+
+[nnUNetV2](https://github.com/MIC-DKFZ/nnUNet)
+
+
+## Helper functions
+
+To save you time, I have created a script that will help you set up the nnUNet data structure with the `nnunet/setup_nnunet.py` script.
+
+For example if you want to set up the nnUNet data structure for the MindBoggle, DBB, and Feta datasets, you can run the following command:
+
 ```bash
-python setup_nnunet.py --mindboggle --dbb
+python setup_nnunet.py --mindboggle --dbb --feta
 ```
 
 ## Setting up the environment variables for nnunet
 
-Before running any command that uses the nnunet package, you need to set up the following environment variables.
+Before running the nnUNet commands, you need to set up the environment variables.
+Indeed, the `nnUNet` regularly checks some environment variables to get the paths to the raw, preprocessed, and results directories.
 
-These variables have been setup by the `setup_nnunet.py` script just before. Check the `config.ini` file to see the values. At the moment I am writing the readme, the values are:
+To setup the environment variables, run the following commands:
 
 ```bash
 export nnUNet_raw=/rds/project/rds-7tts6phZ4tw/deep-neurosegmentation/nnunet/nnUNet_raw
@@ -166,6 +174,9 @@ export nnUNet_preprocessed=/rds/project/rds-7tts6phZ4tw/deep-neurosegmentation/n
 
 export nnUNet_results=/rds/project/rds-7tts6phZ4tw/deep-neurosegmentation/nnunet/nnUNet_results
 ```
+
+
+These variables have been setup by the `setup_nnunet.py` script just before. If you change the location of the folder, the updated values are in the `config.ini` 
 
 (Optional): To check if the environment variables have been set up correctly, run the following command:
 ```bash
@@ -184,7 +195,7 @@ echo "export nnUNet_results=/rds/project/rds-7tts6phZ4tw/deep-neurosegmentation/
 
 ## Plan and Process for nnUNet
 
-Now that your data has been set up in the right format (.nii or .nii.gz files), you still need to prepare them to be compatible for the nnUNetv2 format.
+Now that your data has been set up in the right format (`.nii` or` .nii.gz` files), you still need to prepare them to be compatible for the `nnUNetv2` format.
 
 You can run the following command, where you repace `DATASET_ID` with the corresponding dataset id.
 
@@ -192,12 +203,13 @@ You can run the following command, where you repace `DATASET_ID` with the corres
 nnUNetv2_plan_and_preprocess -d DATASET_ID --verify_dataset_integrity
 ```
 
-The corresponding I am using is:
-
+The format I am using is:
+```bash
 - 1: MindBoggle
 - 2: DBB
 - 3: DBB_augmented
 - 4: Feta
+```
 
 Example with MindBoggle:
 - I replace -d with 1 for the MindBoggle associated id.

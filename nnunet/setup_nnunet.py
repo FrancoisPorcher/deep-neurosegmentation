@@ -1,10 +1,20 @@
-import os  # Importing the os module to interact with the operating system
-import shutil  # Importing shutil for high-level file operations
-from pathlib import Path  # Importing Path from pathlib to handle file system paths
-import configparser  # Importing configparser to manage configuration files
-from argparse import ArgumentParser  # Importing ArgumentParser for command-line argument parsing
-from tqdm import tqdm  # Importing tqdm to display progress bars
-import json  # Importing json to handle JSON data
+import os
+import shutil
+from pathlib import Path
+import configparser
+from argparse import ArgumentParser
+from tqdm import tqdm
+import json
+
+def print_header_footer(message, length=60, char='='):
+    print(char * length)
+    print(message)
+    print(char * length)
+
+def print_subheader(message, length=60, char='-'):
+    print(char * length)
+    print(message)
+    print(char * length)
 
 def setup_nnunet_structure(config, config_path):
     """
@@ -14,28 +24,27 @@ def setup_nnunet_structure(config, config_path):
         config (configparser.ConfigParser): The configuration parser object.
         config_path (str): The path to the configuration file.
     """
-    print("=" * 60)
-    print("Setting up nnUNet Paths")
-    print("=" * 60)
+    nnunet_path = config['DIRECTORIES']['nnunet']
+    raw_folder = Path(nnunet_path, "nnUNet_raw")
+    preprocessed_folder = Path(nnunet_path, "nnUNet_preprocessed")
+    results_folder = Path(nnunet_path, "nnUNet_results")
+
+    print_header_footer("Setting up nnUNet Paths")
     print(f"Path for nnU-Net: {nnunet_path}")
-    print("-" * 60)
-    print(f"Path for Raw folder: {raw_folder}")
+    print_subheader(f"Path for Raw folder: {raw_folder}")
     print(f"Path for Preprocessed folder: {preprocessed_folder}")
     print(f"Path for Results folder: {results_folder}")
-    print("=" * 60)
+    print_header_footer("")
 
-    # Ensuring base folders exist
     raw_folder.mkdir(parents=True, exist_ok=True)
     preprocessed_folder.mkdir(parents=True, exist_ok=True)
     results_folder.mkdir(parents=True, exist_ok=True)
     print("General nnUNet folders created successfully.\n")
     
-    # Update config.ini file with the new paths
     config.set('DIRECTORIES', 'nnUNet_raw', str(raw_folder))
     config.set('DIRECTORIES', 'nnUNet_preprocessed', str(preprocessed_folder))
     config.set('DIRECTORIES', 'nnUNet_results', str(results_folder))
     
-    # Writing changes back to config file
     with open(config_path, 'w') as configfile:
         config.write(configfile)
     
@@ -43,7 +52,7 @@ def setup_nnunet_structure(config, config_path):
 
 def setup_mindboggle_json(dataset_folder):
     """
-    Create a dataset.json file for the Mindboggle dataset within the specified dataset folder.
+    Create a dataset.json file for the MindBoggle dataset within the dataset folder.
 
     Args:
         dataset_folder (Path): The path to the dataset folder.
@@ -51,7 +60,7 @@ def setup_mindboggle_json(dataset_folder):
     data = {
         "channel_names": {
             "0": "T1"
-        },      
+        },
         "labels": {
             "background": 0,
             "Cortical gray matter": 1,
@@ -59,12 +68,100 @@ def setup_mindboggle_json(dataset_folder):
             "Cerebellum gray": 3,
             "Cerebellum white": 4
         },
-        "numTraining": 101, 
+        "numTraining": 101,
         "file_ending": ".nii.gz",
-        "overwrite_image_reader_writer": "SimpleITKIO"  # Optional, auto-detected if not specified
+        "overwrite_image_reader_writer": "SimpleITKIO"
     }
 
-    # Path to the JSON file within the dataset folder
+    json_path = dataset_folder / "dataset.json"
+    with open(json_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
+    print(f"dataset.json created at {json_path}")
+
+def setup_dbb_json(dataset_folder):
+    """
+    Create a dataset.json file for the DBB dataset within the dataset folder.
+
+    Args:
+        dataset_folder (Path): The path to the dataset folder.
+    """
+    data = {
+        "channel_names": {
+            "0": "T1"
+        },
+        "labels": {
+            "background": 0,
+            "CSF": 1,
+            "Gray Matter": 2,
+            "White Matter": 3,
+            "Brain Stem": 4,
+            "Cerebellum": 5
+        },
+        "numTraining": 101,
+        "file_ending": ".nii.gz",
+        "overwrite_image_reader_writer": "SimpleITKIO"
+    }
+
+    json_path = dataset_folder / "dataset.json"
+    with open(json_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
+    print(f"dataset.json created at {json_path}")
+
+def setup_dbb_augmented_json(dataset_folder):
+    """
+    Create a dataset.json file for the DBB_augmented dataset within the dataset folder.
+
+    Args:
+        dataset_folder (Path): The path to the dataset folder.
+    """
+    data = {
+        "channel_names": {
+            "0": "T1"
+        },
+        "labels": {
+            "background": 0,
+            "CSF": 1,
+            "Gray Matter": 2,
+            "White Matter": 3,
+            "Brain Stem": 4,
+            "Cerebellum": 5
+        },
+        "numTraining": 101,
+        "file_ending": ".nii.gz",
+        "overwrite_image_reader_writer": "SimpleITKIO"
+    }
+
+    json_path = dataset_folder / "dataset.json"
+    with open(json_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
+    print(f"dataset.json created at {json_path}")
+
+def setup_feta_json(dataset_folder):
+    """
+    Create a dataset.json file for the Feta dataset within the dataset folder.
+
+    Args:
+        dataset_folder (Path): The path to the dataset folder.
+    """
+    data = {
+        "channel_names": {
+            "0": "T1"
+        },
+        "labels": {
+            "background": 0,
+            "Cortical gray matter": 1,
+            "Cortical White matter": 2,
+            "Cerebellum gray": 3,
+            "Cerebellum white": 4
+        },
+        "numTraining": 80,
+        "file_ending": ".nii.gz",
+        "overwrite_image_reader_writer": "SimpleITKIO"
+    }
+
     json_path = dataset_folder / "dataset.json"
     with open(json_path, 'w') as json_file:
         json.dump(data, json_file, indent=4)
@@ -80,46 +177,57 @@ def copy_files_to_dataset(src_path, dest_folder, file_type):
         dest_folder (Path): The destination directory path.
         file_type (str): The type of files being copied (e.g., 'input images to training').
     """
-    print("=" * 60)
-    print(f"COPYING {file_type.upper()} FILES")
-    print("=" * 60)
-    files = list(Path(src_path).glob('*'))  # Listing all files in the source directory
+    print_header_footer(f"COPYING {file_type.upper()} FILES")
+    files = list(Path(src_path).glob('*'))
     for src_file in tqdm(files, desc=f"Copying {file_type}"):
-        shutil.copy(src_file, dest_folder)  # Copying each file to the destination directory
+        shutil.copy(src_file, dest_folder)
         print(f"Copied {src_file.name} to {dest_folder}")
-    print("=" * 60 + "\n")
+    print_header_footer("")
 
-def setup_mindboggle_dataset():
+def setup_dataset(dataset_name, input_path, segmentation_path):
     """
     Setup specific dataset folder within the nnU-Net structure and copy necessary files.
-    """
-    print("=" * 60)
-    print("Setting up Mindboggle Dataset")
-    print("=" * 60)
 
-    # Creating specific dataset folder
-    dataset_folder = raw_folder / "Dataset001_mindboggle"
+    Args:
+        dataset_name (str): The name of the dataset (e.g., "mindboggle", "dbb", "dbb_augmented", "feta").
+        input_path (str): The path to the input images.
+        segmentation_path (str): The path to the segmentation images.
+    """
+    dataset_id_map = {
+        "mindboggle": 1,
+        "dbb": 2,
+        "dbb_augmented": 3,
+        "feta": 4
+    }
+    dataset_id = dataset_id_map[dataset_name]
+
+    print_header_footer(f"Setting up {dataset_name.capitalize()} Dataset (ID: {dataset_id})")
+
+    dataset_folder = raw_folder / f"Dataset00{dataset_id}_{dataset_name}"
     imagesTr_folder = dataset_folder / "imagesTr"
     imagesTs_folder = dataset_folder / "imagesTs"
     labelsTr_folder = dataset_folder / "labelsTr"
 
-    # Create dataset directories
     dataset_folder.mkdir(exist_ok=True)
     imagesTr_folder.mkdir(exist_ok=True)
     imagesTs_folder.mkdir(exist_ok=True)
     labelsTr_folder.mkdir(exist_ok=True)
 
-    # Copy files to corresponding folders
-    copy_files_to_dataset(mindboggle_input_path, imagesTr_folder, 'input images to training')
-    copy_files_to_dataset(mindboggle_input_path, imagesTs_folder, 'input images to testing')
-    copy_files_to_dataset(mindboggle_segmentation_path, labelsTr_folder, 'segmentation')
+    copy_files_to_dataset(input_path, imagesTr_folder, 'input images to training')
+    copy_files_to_dataset(input_path, imagesTs_folder, 'input images to testing')
+    copy_files_to_dataset(segmentation_path, labelsTr_folder, 'segmentation')
     
-    rename_images_and_labels_for_nnunet_convention("mindboggle", imagesTr_folder, labelsTr_folder, imagesTs_folder)
+    rename_images_and_labels_for_nnunet_convention(dataset_name, imagesTr_folder, labelsTr_folder, imagesTs_folder)
     
-    # Create the JSON file for dataset description
-    setup_mindboggle_json(dataset_folder)
+    json_setup_functions = {
+        "mindboggle": setup_mindboggle_json,
+        "dbb": setup_dbb_json,
+        "dbb_augmented": setup_dbb_augmented_json,
+        "feta": setup_feta_json
+    }
+    json_setup_functions[dataset_name](dataset_folder)
     
-    print("Mindboggle dataset folders populated successfully.")
+    print(f"{dataset_name.capitalize()} dataset folders populated successfully.")
 
 def rename_images_and_labels_for_nnunet_convention(dataset_name, input_directory, label_directory, test_directory):
     """
@@ -131,84 +239,77 @@ def rename_images_and_labels_for_nnunet_convention(dataset_name, input_directory
         label_directory (Path): The directory containing the label images.
         test_directory (Path): The directory containing the test images.
     """
-    # Get the list of files in the input directory
     train_file_names = sorted(os.listdir(input_directory))
     test_file_names = sorted(os.listdir(test_directory))
     label_file_names = sorted(os.listdir(label_directory))
 
     print("Renaming files for nnU-Net convention")
-    print("There are {} files in the input directory".format(len(train_file_names)))
-    print("There are {} files in the test directory".format(len(test_file_names)))
-    print("There are {} files in the label directory".format(len(label_file_names)))
+    print(f"There are {len(train_file_names)} files in the input directory")
+    print(f"There are {len(test_file_names)} files in the test directory")
+    print(f"There are {len(label_file_names)} files in the label directory")
 
-    # Rename training files
     for i, file_name in enumerate(train_file_names):
-        # Extract the file extension and base name
-        file_extension = file_name.split('.')[-1]
         base_name = file_name[:-7]  # Assuming .nii.gz
 
-        # Define new file names according to nnU-Net convention
         new_input_file_name = f"{dataset_name}_{str(i).zfill(4)}_0000.nii.gz"
         new_label_file_name = f"{dataset_name}_{str(i).zfill(4)}.nii.gz"
 
-        # Full paths for renaming
         input_file_path = input_directory / file_name
         label_file_path = label_directory / f"{base_name}.nii.gz"
         new_input_file_path = input_directory / new_input_file_name
         new_label_file_path = label_directory / new_label_file_name
 
-        # Rename the input file
         os.rename(input_file_path, new_input_file_path)
-        # Check if corresponding label file exists and rename it
         if label_file_path.exists():
             os.rename(label_file_path, new_label_file_path)
 
-        # Print out the renaming actions
         print(f"Renamed {file_name} to {new_input_file_name} (input) and {base_name}.nii.gz to {new_label_file_name} (label)")
 
-    # Rename test files
     for i, file_name in enumerate(test_file_names):
-        # Extract the file extension and base name
-        file_extension = file_name.split('.')[-1]
         base_name = file_name[:-7]  # Assuming .nii.gz
 
-        # Define new file name according to nnU-Net convention
         new_file_name = f"{dataset_name}_{str(i).zfill(4)}_0000.nii.gz"
 
-        # Full path for renaming
         input_file_path = test_directory / file_name
         new_input_file_path = test_directory / new_file_name
 
-        # Rename the input file
         os.rename(input_file_path, new_input_file_path)
 
-        # Print out the renaming actions
         print(f"Renamed {file_name} to {new_file_name} (input)")
 
     print("Successfully renamed all files")
 
-# Command line argument parsing
-parser = ArgumentParser(description="Setup nnU-Net structure and manage specific datasets.")
-parser.add_argument("--mindboggle", action="store_true", help="Setup for the Mindboggle dataset")
-args = parser.parse_args()
+def main():
+    parser = ArgumentParser(description="Setup nnU-Net structure and manage specific datasets.")
+    parser.add_argument("--mindboggle", action="store_true", help="Setup for the Mindboggle dataset")
+    parser.add_argument("--dbb", action="store_true", help="Setup for the DBB dataset")
+    parser.add_argument("--dbb_augmented", action="store_true", help="Setup for the DBB_augmented dataset")
+    parser.add_argument("--feta", action="store_true", help="Setup for the Feta dataset")
+    args = parser.parse_args()
 
-# Reading configuration
-config = configparser.ConfigParser()
-config_path = '/home/fp427/rds/rds-cam-segm-7tts6phZ4tw/deep-neurosegmentation/config.ini'  # ensure this path is correct
-config.read(config_path)
+    config = configparser.ConfigParser()
+    config_path = '/home/fp427/rds/rds-cam-segm-7tts6phZ4tw/deep-neurosegmentation/config.ini'
+    config.read(config_path)
 
-# Define directories from config
-nnunet_path = config['DIRECTORIES']['nnunet']
-raw_folder = Path(nnunet_path, "nnUNet_raw")
-preprocessed_folder = Path(nnunet_path, "nnUNet_preprocessed")
-results_folder = Path(nnunet_path, "nnUNet_results")
-mindboggle_path = config['DIRECTORIES']['mindboggle']
-mindboggle_input_path = os.path.join(mindboggle_path, 'input')
-mindboggle_segmentation_path = os.path.join(mindboggle_path, 'segmentation')
+    global raw_folder
+    nnunet_path = config['DIRECTORIES']['nnunet']
+    raw_folder = Path(nnunet_path, "nnUNet_raw")
+    preprocessed_folder = Path(nnunet_path, "nnUNet_preprocessed")
+    results_folder = Path(nnunet_path, "nnUNet_results")
+    
+    setup_nnunet_structure(config=config, config_path=config_path)
 
-# Always perform general setup
-setup_nnunet_structure(config=config, config_path=config_path)
+    dataset_name_map = {
+        "mindboggle": 1,
+        "dbb": 2,
+        "dbb_augmented": 3,
+        "feta": 4
+    }
 
-# Additional setup for Mindboggle if specified
-if args.mindboggle:
-    setup_mindboggle_dataset()
+    for dataset_name in ["mindboggle", "dbb", "feta"]:  # Exclude dbb_augmented
+        input_path = os.path.join(config['DIRECTORIES'][dataset_name], 'input')
+        segmentation_path = os.path.join(config['DIRECTORIES'][dataset_name], 'segmentation')
+        setup_dataset(dataset_name, input_path, segmentation_path)
+
+if __name__ == "__main__":
+    main()

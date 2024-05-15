@@ -4,84 +4,90 @@ import nibabel as nib
 import numpy as np
 import matplotlib.pyplot as plt
 
+def print_header_footer(message, length=30, char='='):
+    print(char * length)
+    print(message)
+    print(char * length)
+
+def print_subheader(message, length=30, char='-'):
+    print(char * length)
+    print(message)
+    print(char * length)
+
+
 def get_random_file_paths(base_dir):
-    # Get a list of all files in the first directory
-    first_dir = os.path.join(base_dir, 'ground_truth')
-    file_names = os.listdir(first_dir)
+    # Get a list of all files in the input directory
+    input_dir = os.path.join(base_dir, 'input')
+    file_names = os.listdir(input_dir)
 
     # Choose a random file name
     random_file = random.choice(file_names)
 
     # Construct the paths for the corresponding files in all three directories
-    ground_truth_path = os.path.join(first_dir, random_file)
-    input_path = os.path.join(base_dir, 'input', random_file)
+    input_path = os.path.join(input_dir, random_file)
+    ground_truth_path = os.path.join(base_dir, 'ground_truth', random_file)
     segmentation_path = os.path.join(base_dir, 'segmentation', random_file)
 
     # Print
-    print("=" * 30)
-    print("Getting a random file from directory")
-    print("=" * 30)
+    print_header_footer("Getting a random file from directory")
     print(f"Random file: {random_file}")
-    print("-" * 30)
+    print_subheader(f"Input path: {input_path}")
     print(f"Ground truth path: {ground_truth_path}")
-    print(f"Input path: {input_path}")
     print(f"Segmentation path: {segmentation_path}")
-    print("=" * 30)
+    print_header_footer("", 30, "=")
     print("\n\n")  # skip 3 lines
 
     return ground_truth_path, input_path, segmentation_path
 
-def load_files(ground_truth_path, input_path, segmentation_path):
+def load_nifti_file(file_path, file_type):
+    if file_path is not None:
+        img = nib.load(file_path)
+        data = img.get_fdata()
+        print(f"{file_type} Data (from {file_path}):")
+        print(f"Shape: {data.shape}")
+        return data
+    else:
+        print(f"{file_type} path is not provided.")
+        return None
+
+def load_nifti_triplet(ground_truth_path=None, input_path=None, segmentation_path=None):
+    # Print
+    print_header_footer("Loading nifti files..")
+
     # Load ground truth file
-    ground_truth_img = nib.load(ground_truth_path)
-    ground_truth_data = ground_truth_img.get_fdata()
+    ground_truth_data = load_nifti_file(ground_truth_path, "Ground Truth")
+    print_subheader("")
 
     # Load input file
-    input_img = nib.load(input_path)
-    input_data = input_img.get_fdata()
+    input_data = load_nifti_file(input_path, "Input")
+    print_subheader("")
 
     # Load segmentation file
-    segmentation_img = nib.load(segmentation_path)
-    segmentation_data = segmentation_img.get_fdata()
-
-    # Print
-    print("=" * 30)
-    print("Loading nifti files..")
-    print("=" * 30)
-    print(f"Ground Truth Data (from {ground_truth_path}):")
-    print(f"Shape: {ground_truth_data.shape}")
-    print("-" * 30)
-    print(f"Input Data (from {input_path}):")
-    print(f"Shape: {input_data.shape}")
-    print("-" * 30)
-    print(f"Segmentation Data (from {segmentation_path}):")
-    print(f"Shape: {segmentation_data.shape}")
-    print("=" * 30)
+    segmentation_data = load_nifti_file(segmentation_path, "Segmentation")
+    print_header_footer("")
     print("\n\n")  # skip 3 lines
 
     return ground_truth_data, input_data, segmentation_data
 
 def report_data_info(ground_truth_data, input_data, segmentation_data):
-    print("=" * 30)
-    print("Data Information")
-    print("=" * 30)
+    print_header_footer("Data Information")
 
     print("\nGround Truth Data:")
-    print("-" * 30)
+    print_subheader("")
     print(f"Data Type: {ground_truth_data.dtype}")
     print(f"Number of Unique Values: {len(np.unique(ground_truth_data))}")
 
     print("\nInput Data:")
-    print("-" * 30)
+    print_subheader("")
     print(f"Data Type: {input_data.dtype}")
     print(f"Number of Unique Values: {len(np.unique(input_data))}")
 
     print("\nSegmentation Data:")
-    print("-" * 30)
+    print_subheader("")
     print(f"Data Type: {segmentation_data.dtype}")
     print(f"Number of Unique Values: {len(np.unique(segmentation_data))}")
 
-    print("=" * 30)
+    print_header_footer("")
     print("\n\n")  # skip 3 lines
 
     # Plot the distribution of values
@@ -103,3 +109,4 @@ def report_data_info(ground_truth_data, input_data, segmentation_data):
 
     fig.tight_layout()
     plt.show()
+
