@@ -28,10 +28,6 @@ To create the environment `neurosegmentation`, run the following command:
 conda create -n neurosegmentation python=3.9
 ```
 
-
-
-This will create a `config.ini` file that will be used to get all the directories.
-
 To activate the environment, run the following command:
 ```bash
 conda activate neurosegmentation
@@ -47,10 +43,99 @@ Install nnunetv2 with:
 pip install nnunetv2
 ```
 
-To create the config file that will be useful to get all directories, use the command:
+## Creation of the config file
+
+Several python scripts access the directories of the data. To avoid hardcoding the paths, we use a config file that contains all the paths.
+
+To create the config file `config.ini` that will be useful to get all directories, use the command:
 ```bash
 python create_config.py
 ```
+
+Note: It's possible that there is an error, and you are asked to install other libraries such as `tqdm` or `nibabel`. Install the required libraries, I will release the full environment soon.
+
+# Data Preparation
+
+To prepare the directory structure for your data, run the `setup_data_processed.py` script. This script creates the necessary subdirectories within the `data/processed` folder.
+
+## Usage
+
+### Creating Directories
+
+To create directory structures for specific datasets, you can run the script with the desired folder names as arguments. For example:
+
+```bash
+python setup_data_processed.py mindboggle feta dbb dbb_augmented
+```
+
+
+This will create the following directory structure:
+
+```bash
+data/
+└── processed/
+    ├── mindboggle/
+    │   ├── ground_truth/
+    │   ├── input/
+    │   └── segmentation/
+    ├── feta/
+    │   ├── ground_truth/
+    │   ├── input/
+    │   └── segmentation/
+    ├── dbb/
+    │   ├── ground_truth/
+    │   ├── input/
+    │   └── segmentation/
+    └── dbb_augmented/
+        ├── ground_truth/
+        ├── input/
+        └── segmentation/
+```
+
+
+### Overwriting Existing Directories
+
+By default, the script will not overwrite existing directories. If you want to force the script to overwrite existing directories and their contents, use the `-o` or `--overwrite` flag:
+
+```bash
+python setup_data_processed.py mindboggle feta dbb dbb_augmented -o
+```
+
+
+This command will overwrite any existing directories for `mindboggle`, `feta`, `dbb`, and `dbb_augmented`.
+
+### Directory Structure Explanation
+
+The script creates the following subdirectories for each specified folder:
+
+- `ground_truth`: Directory for ground truth data.
+- `input`: Directory for input data.
+- `segmentation`: Directory for segmentation data.
+
+## Placing Raw Data
+
+You should first place your raw data in the `data/raw` folder. After processing the data to ensure it has a homogeneous format and consistent file extensions, move the processed data to the corresponding subdirectories in the `data/processed` folder.
+
+### Example
+
+To create a directory structure for the `mindboggle` and `feta` datasets without overwriting existing directories, run:
+
+```bash
+python setup_data_processed.py mindboggle feta
+```
+
+
+To create and overwrite the directory structure for all four datasets (`mindboggle`, `feta`, `dbb`, `dbb_augmented`), run:
+
+```bash
+python setup_data_processed.py mindboggle feta dbb dbb_augmented -o
+```
+
+
+By following these instructions, you can set up the directory structure needed for data preprocessing efficiently.
+
+
+
 
 # nnUNet
 
@@ -58,6 +143,7 @@ python create_config.py
 
 To setup nnUnetV2 data structure, go in the nnunet folder and run
 ```bash
+cd nnunet
 python setup_nnunet.py
 ```
 
@@ -114,14 +200,23 @@ The corresponding I am using is:
 - 4: Feta
 
 Example with MindBoggle:
+- I replace -d with 1 for the MindBoggle associated id.
+- I also add `-c 3d_fullres` because I only use the 3D CNN, no need to train the 2D cnn nor the cascade.
 
 ```bash
-nnUNetv2_plan_and_preprocess -d 1 --verify_dataset_integrity
+nnUNetv2_plan_and_preprocess -d 1 --verify_dataset_integrity -c 3d_fullres
 ```
 
 ## Training nnUNet
 
-To train the nnUNet model, you can run the `train_model.sh` script in the `./cluster_scripts` folder. 
+To train the nnUNet model, you can send a SLURM job with the `train_model.sh` script in the `./cluster_scripts` folder.
+
+You can run the following command:
+
+```bash
+cd cluster_scripts
+sbatch train_model.sh
+```
 
 By default: the `train_model.sh` script will train the model on the MindBoggle dataset with the 3d_fullres network and all folds.
 

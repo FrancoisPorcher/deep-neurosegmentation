@@ -194,7 +194,7 @@ args = parser.parse_args()
 
 # Reading configuration
 config = configparser.ConfigParser()
-config_path = '../config.ini'  # ensure this path is correct
+config_path = '/home/fp427/rds/rds-cam-segm-7tts6phZ4tw/deep-neurosegmentation/config.ini'  # ensure this path is correct
 config.read(config_path)
 
 # Define directories from config
