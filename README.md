@@ -5,13 +5,31 @@ A Deep Learning framework to perform NeuroImaging with a Semi-Supervised Learnin
 - [Project guideline](https://docs.google.com/document/d/1340JOV0JsvpCUIeUQ3j8jZcAGy1AWgKJdzz6PUAPiP8/edit)
 - [Overleaf](https://www.overleaf.com/4649694261cykwdxrwpjjc#cf931c)
 
-## Data
-The Deep-Neurosegmentation project utilizes the Distorted Brain Benchmark (DBB) dataset, which is detailed in [this article](https://www.sciencedirect.com/science/article/pii/S1053811922006024).
+
+## MindBoggle Dataset
+
+Mindboggle is a dataset that contains 101 annotated brain images and segmentations. The dataset is available on the [MindBoggle website](https://mindboggle.info/data). Considered the gold standard.
+
+
+### Legend
+
+![alt text](image-mindboggle.png)
+
+## DBB Dataset
+
+The DBB dataset is a set of 954 subjects, is detailed in [this article](https://www.sciencedirect.com/science/article/pii/S1053811922006024).
 
 ### Dataset Overview
 - The dataset includes typically developing cohorts of children and adolescents. The raw image data for these cohorts is not publicly shared. However, we include one of the cohorts (NIHPD), identifiable through the DBB.csv file.
-- For distorted brain patients (approximately 150 subjects), the raw image data is available in the `proj-` directory, originally downloaded from BrainLife.
-- Synthetic domain randomized data can be found in `DBB_jakob/iteration_*` directories (1, 2, 3). Each subject has a `*_lab.nii.gz` (label mask) and `*_im.nii.gz` (synthetic brain image), both of the same dimension (182x218x182). The label masks denote tissue configuration as follows:
+
+Data augmentation has been applied to labels and synthetic brain images to generate paired outputs, creating three iterations for a more extensive training dataset.
+
+### References
+
+![alt text](image-dbb.png)
+
+### Legend
+
   - 0 = background
   - 1 = cerebrospinal fluid
   - 2 = gray matter
@@ -19,20 +37,6 @@ The Deep-Neurosegmentation project utilizes the Distorted Brain Benchmark (DBB) 
   - 4 = subcortical gray matter
   - 5 = brain stem
   - 6 = cerebellum
-
-Data augmentation has been applied to labels and synthetic brain images to generate paired outputs, creating three iterations for a more extensive training dataset.
-
-## Mindboggle Dataset
-
-### References
-
-### Legend
-
-## DBB Dataset
-
-### References
-
-### Legend
 
 ## Feta dataset
 
@@ -154,10 +158,28 @@ I distilled the essential here, but the nnunet framework is updated regularly, s
 
 To save you time, I have created a script that will help you set up the nnUNet data structure with the `nnunet/setup_nnunet.py` script.
 
-For example if you want to set up the nnUNet data structure for the MindBoggle, DBB, and Feta datasets, you can run the following command:
+By default, the script will setup the MindBoggle, DBB, and Feta nnUNet structure from the `data/processed` folder.
 
 ```bash
-python setup_nnunet.py --mindboggle --dbb --feta
+python setup_nnunet.py
+```
+
+If you want to setup only chosen datasets (for example mindboggle and dbb), you can use the following command:
+
+```bash
+python setup_nnunet.py --mindboggle --dbb
+```
+
+By default, the script will not overwrite. If you want to forcefully overwrite the structure, you can use the `-o` or `--overwrite` flag:
+
+```bash
+python setup_nnunet.py -o
+```
+
+Or if you want to overwrite a specific dataset:
+
+```bash
+python setup_nnunet.py --mindboggle --dbb -o
 ```
 
 ## Setting up the environment variables for nnunet

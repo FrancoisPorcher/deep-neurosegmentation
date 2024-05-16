@@ -95,10 +95,11 @@ def setup_dbb_json(dataset_folder):
             "CSF": 1,
             "Gray Matter": 2,
             "White Matter": 3,
-            "Brain Stem": 4,
-            "Cerebellum": 5
+            "Subcortical Gray Matter": 4,
+            "Brain Stem": 5,
+            "Cerebellum": 6
         },
-        "numTraining": 101,
+        "numTraining": 954,
         "file_ending": ".nii.gz",
         "overwrite_image_reader_writer": "SimpleITKIO"
     }
@@ -109,35 +110,7 @@ def setup_dbb_json(dataset_folder):
 
     print(f"dataset.json created at {json_path}")
 
-def setup_dbb_augmented_json(dataset_folder):
-    """
-    Create a dataset.json file for the DBB_augmented dataset within the dataset folder.
 
-    Args:
-        dataset_folder (Path): The path to the dataset folder.
-    """
-    data = {
-        "channel_names": {
-            "0": "T1"
-        },
-        "labels": {
-            "background": 0,
-            "CSF": 1,
-            "Gray Matter": 2,
-            "White Matter": 3,
-            "Brain Stem": 4,
-            "Cerebellum": 5
-        },
-        "numTraining": 101,
-        "file_ending": ".nii.gz",
-        "overwrite_image_reader_writer": "SimpleITKIO"
-    }
-
-    json_path = dataset_folder / "dataset.json"
-    with open(json_path, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
-
-    print(f"dataset.json created at {json_path}")
 
 def setup_feta_json(dataset_folder):
     """
@@ -168,7 +141,7 @@ def setup_feta_json(dataset_folder):
 
     print(f"dataset.json created at {json_path}")
 
-def copy_files_to_dataset(src_path, dest_folder, file_type):
+def copy_files_to_dataset(src_path, dest_folder, file_type, overwrite=False):
     """
     Copy files from source path to destination folder with progress display.
 
@@ -176,15 +149,20 @@ def copy_files_to_dataset(src_path, dest_folder, file_type):
         src_path (str): The source directory path.
         dest_folder (Path): The destination directory path.
         file_type (str): The type of files being copied (e.g., 'input images to training').
+        overwrite (bool): Whether to overwrite existing files.
     """
     print_header_footer(f"COPYING {file_type.upper()} FILES")
     files = list(Path(src_path).glob('*'))
     for src_file in tqdm(files, desc=f"Copying {file_type}"):
-        shutil.copy(src_file, dest_folder)
-        print(f"Copied {src_file.name} to {dest_folder}")
+        dest_file = dest_folder / src_file.name
+        if overwrite or not dest_file.exists():
+            shutil.copy(src_file, dest_folder)
+            print(f"Copied {src_file.name} to {dest_folder}")
+        else:
+            print(f"Skipped {src_file.name} (already exists)")
     print_header_footer("")
 
-def setup_dataset(dataset_name, input_path, segmentation_path):
+def setup_dataset(dataset_name, input_path, segmentation_path, overwrite=False):
     """
     Setup specific dataset folder within the nnU-Net structure and copy necessary files.
 
@@ -192,6 +170,7 @@ def setup_dataset(dataset_name, input_path, segmentation_path):
         dataset_name (str): The name of the dataset (e.g., "mindboggle", "dbb", "dbb_augmented", "feta").
         input_path (str): The path to the input images.
         segmentation_path (str): The path to the segmentation images.
+        overwrite (bool): Whether to overwrite existing files.
     """
     dataset_id_map = {
         "mindboggle": 1,
@@ -213,9 +192,9 @@ def setup_dataset(dataset_name, input_path, segmentation_path):
     imagesTs_folder.mkdir(exist_ok=True)
     labelsTr_folder.mkdir(exist_ok=True)
 
-    copy_files_to_dataset(input_path, imagesTr_folder, 'input images to training')
-    copy_files_to_dataset(input_path, imagesTs_folder, 'input images to testing')
-    copy_files_to_dataset(segmentation_path, labelsTr_folder, 'segmentation')
+    copy_files_to_dataset(input_path, imagesTr_folder, 'input images to training', overwrite)
+    copy_files_to_dataset(input_path, imagesTs_folder, 'input images to testing', overwrite)
+    copy_files_to_dataset(segmentation_path, labelsTr_folder, 'segmentation', overwrite)
     
     rename_images_and_labels_for_nnunet_convention(dataset_name, imagesTr_folder, labelsTr_folder, imagesTs_folder)
     
@@ -285,6 +264,7 @@ def main():
     parser.add_argument("--dbb", action="store_true", help="Setup for the DBB dataset")
     parser.add_argument("--dbb_augmented", action="store_true", help="Setup for the DBB_augmented dataset")
     parser.add_argument("--feta", action="store_true", help="Setup for the Feta dataset")
+    parser.add_argument("-o", "--overwrite", action="store_true", help="Overwrite existing files")
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
@@ -306,10 +286,14 @@ def main():
         "feta": 4
     }
 
-    for dataset_name in ["mindboggle", "dbb", "feta"]:  # Exclude dbb_augmented
+    selected_datasets = [k for k, v in vars(args).items() if k in dataset_name_map and v]
+    if not selected_datasets:
+        selected_datasets = ["mindboggle", "dbb", "feta"]  # Default datasets
+
+    for dataset_name in selected_datasets:
         input_path = os.path.join(config['DIRECTORIES'][dataset_name], 'input')
         segmentation_path = os.path.join(config['DIRECTORIES'][dataset_name], 'segmentation')
-        setup_dataset(dataset_name, input_path, segmentation_path)
+        setup_dataset(dataset_name, input_path, segmentation_path, args.overwrite)
 
 if __name__ == "__main__":
     main()
