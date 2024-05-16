@@ -114,21 +114,24 @@ def setup_dbb_json(dataset_folder):
 
 def setup_feta_json(dataset_folder):
     """
-    Create a dataset.json file for the Feta dataset within the dataset folder.
+    Create a dataset.json file for the FeTA dataset within the dataset folder.
 
     Args:
         dataset_folder (Path): The path to the dataset folder.
     """
     data = {
         "channel_names": {
-            "0": "T1"
+            "0": "T2"
         },
         "labels": {
-            "background": 0,
-            "Cortical gray matter": 1,
-            "Cortical White matter": 2,
-            "Cerebellum gray": 3,
-            "Cerebellum white": 4
+            "background and non-brain tissue": 0,
+            "cerebrospinal fluid": 1,
+            "gray matter": 2,
+            "white matter": 3,
+            "ventricles": 4,
+            "cerebellum": 5,
+            "deep gray matter": 6,
+            "brainstem": 7
         },
         "numTraining": 80,
         "file_ending": ".nii.gz",

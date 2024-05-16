@@ -38,11 +38,73 @@ Data augmentation has been applied to labels and synthetic brain images to gener
   - 5 = brain stem
   - 6 = cerebellum
 
-## Feta dataset
+## FeTA Dataset
+
+The Fetal Tissue Annotation (FeTA) Challenge dataset is the training dataset for the FeTA Challenge held at the MICCAI Conference. The dataset consists of T2-weighted fetal brain super-resolution reconstructions and the associated manually-created label map consisting of seven different tissues:
+
+0. Background and non-brain tissue
+1. Cerebrospinal fluid
+2. Grey Matter
+3. White Matter
+4. Ventricles
+5. Cerebellum
+6. Deep Grey Matter
+7. Brainstem
+
+### Dataset Overview
+
+The goal of this dataset is to encourage research groups to create automatic multi-class segmentation methods to segment the fetal brain across a range of gestational ages and a variety of brain pathologies as well as normally developing fetal brains.
+
+### Terms of Use
+
+Access to the data requires that you are a registered Synapse user and agree to the following terms and conditions:
+
+1. Fetal Tissue Annotation Challenge Dataset shall be used only for research and education purposes.
+2. By joining the FeTA dataset users team, you acknowledge that the owner of the Fetal Tissue Annotation Challenge Dataset is the University Children’s Hospital Zurich.
+
+See [feta.grand-challenge.org](https://feta.grand-challenge.org) for more details and to register for the FeTA Challenge.
 
 ### References
 
+If you use this dataset, please cite the following:
+
+Payette, K., de Dumast, P., Kebiri, H. et al. An automatic multi-tissue human fetal brain segmentation benchmark using the Fetal Tissue Annotation Dataset. Sci Data 8, 167 (2021). [https://doi.org/10.1038/s41597-021-00946-3](https://doi.org/10.1038/s41597-021-00946-3)
+
 ### Legend
+
+- 0 = Background and Non-Brain Tissue (BG)
+- 1 = Extra-axial CSF (CSF)
+- 2 = Gray Matter and developing cortical plate (GM)
+- 3 = White Matter and subplate (WM)
+- 4 = Lateral ventricles (LV)
+- 5 = Cerebellum (CBM)
+- 6 = Thalamus and putamen (SGM)
+- 7 = Brainstem (BS)
+
+### Additional Information
+
+- **Pathology**: 
+  - Description: Presence of fetal pathology
+  - Levels: 
+    - Pathological: Fetal pathology
+    - Neurotypical: Fetus with no apparent neurodevelopmental malformation
+
+- **Gestational Age**: 
+  - Description: Gestational age of the fetus
+  - Units: Weeks
+
+### Metadata
+
+- **Name**: Fetal Tissue Annotation Challenge FeTA Dataset
+- **BIDSVersion**: 1.6.1
+- **DatasetType**: Derivative
+- **License**: KISPI License
+- **Authors**: Kelly Payette, Andras Jakab
+- **Acknowledgements**: Special thanks to the data contributors, annotators and the contributors of the initial benchmarks on the FeTA dataset: Priscille Guerrier de Dumast, Hamza Kebiri, Ivan Ezhov, Johannes Paetzold, Suprosanna Shit, Asim Iqbal, Romesa Khan, Raimund Kottke, Patrice Grehten, Hui Ji, Levente Lanczi, Marianna Nagy, Monika Beresova, Thi Dao Nguyen, Giancarlo Natalucci, Theofanis Karayannis, Bjoern Menze, Meritxell Bach Cuadra
+- **HowToAcknowledge**: Please cite our Preprint: Payette et al. (2020) A comparison of automatic multi-tissue segmentation methods of the human fetal brain using the FeTA Dataset; or the paper after publication. ArXiv
+- **Funding**: EMDO Foundation, OPO Foundation, Prof. Dr. Max Cloetta Foundation, FZK (Forschungszentrum für das Kind) Grant, Anna-Mueller-Grocholski Foundation, ZNZ PhD Grant
+- **EthicsApprovals**: Mothers of the healthy fetuses participating in the respective research studies were prospectively informed about the study by members of the research team and gave written consent for their participation. Mothers of fetuses with pathology included in the current work were scanned as part of their routine clinical care and gave informed written consent for the re-use of their data. The ethical committee of the Cantone of Zürich approved the prospective and retrospective studies that collected and analysed the MRI data (Decision numbers: 2017-00885, 2016-01019, 2017-00167), and a waiver for an ethical approval was acquired for the release of an irreversibly anonymized dataset.
+
 
 
 
