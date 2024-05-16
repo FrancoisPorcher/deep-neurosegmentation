@@ -1,6 +1,10 @@
 # Deep-Neurosegmentation
 A Deep Learning framework to perform NeuroImaging with a Semi-Supervised Learning approach.
 
+![DBB Image](./images/image-dbb.png)
+![MindBoggle Image](./images/image-mindboggle.png)
+![General Image](./images/image-feta.png)
+
 ## Useful Links
 - [Project guideline](https://docs.google.com/document/d/1340JOV0JsvpCUIeUQ3j8jZcAGy1AWgKJdzz6PUAPiP8/edit)
 - [Overleaf](https://www.overleaf.com/4649694261cykwdxrwpjjc#cf931c)
@@ -12,8 +16,8 @@ Mindboggle is a dataset that contains 101 annotated brain images and segmentatio
 
 
 ### Legend
+![MindBoggle Image](./images/image-mindboggle.png)
 
-![alt text](image-mindboggle.png)
 
 ## DBB Dataset
 
@@ -26,10 +30,10 @@ Data augmentation has been applied to labels and synthetic brain images to gener
 
 ### References
 
-![alt text](image-dbb.png)
+![DBB Image](./images/image-dbb.png)
 
 ### Legend
-
+```
   - 0 = background
   - 1 = cerebrospinal fluid
   - 2 = gray matter
@@ -37,11 +41,11 @@ Data augmentation has been applied to labels and synthetic brain images to gener
   - 4 = subcortical gray matter
   - 5 = brain stem
   - 6 = cerebellum
-
+```
 ## FeTA Dataset
 
 The Fetal Tissue Annotation (FeTA) Challenge dataset is the training dataset for the FeTA Challenge held at the MICCAI Conference. The dataset consists of T2-weighted fetal brain super-resolution reconstructions and the associated manually-created label map consisting of seven different tissues:
-
+```
 0. Background and non-brain tissue
 1. Cerebrospinal fluid
 2. Grey Matter
@@ -50,7 +54,7 @@ The Fetal Tissue Annotation (FeTA) Challenge dataset is the training dataset for
 5. Cerebellum
 6. Deep Grey Matter
 7. Brainstem
-
+```
 ### Dataset Overview
 
 The goal of this dataset is to encourage research groups to create automatic multi-class segmentation methods to segment the fetal brain across a range of gestational ages and a variety of brain pathologies as well as normally developing fetal brains.
@@ -58,10 +62,10 @@ The goal of this dataset is to encourage research groups to create automatic mul
 ### Terms of Use
 
 Access to the data requires that you are a registered Synapse user and agree to the following terms and conditions:
-
+```
 1. Fetal Tissue Annotation Challenge Dataset shall be used only for research and education purposes.
 2. By joining the FeTA dataset users team, you acknowledge that the owner of the Fetal Tissue Annotation Challenge Dataset is the University Children’s Hospital Zurich.
-
+```
 See [feta.grand-challenge.org](https://feta.grand-challenge.org) for more details and to register for the FeTA Challenge.
 
 ### References
@@ -71,7 +75,7 @@ If you use this dataset, please cite the following:
 Payette, K., de Dumast, P., Kebiri, H. et al. An automatic multi-tissue human fetal brain segmentation benchmark using the Fetal Tissue Annotation Dataset. Sci Data 8, 167 (2021). [https://doi.org/10.1038/s41597-021-00946-3](https://doi.org/10.1038/s41597-021-00946-3)
 
 ### Legend
-
+```
 - 0 = Background and Non-Brain Tissue (BG)
 - 1 = Extra-axial CSF (CSF)
 - 2 = Gray Matter and developing cortical plate (GM)
@@ -80,7 +84,7 @@ Payette, K., de Dumast, P., Kebiri, H. et al. An automatic multi-tissue human fe
 - 5 = Cerebellum (CBM)
 - 6 = Thalamus and putamen (SGM)
 - 7 = Brainstem (BS)
-
+```
 ### Additional Information
 
 - **Pathology**: 
@@ -106,7 +110,7 @@ Payette, K., de Dumast, P., Kebiri, H. et al. An automatic multi-tissue human fe
 - **EthicsApprovals**: Mothers of the healthy fetuses participating in the respective research studies were prospectively informed about the study by members of the research team and gave written consent for their participation. Mothers of fetuses with pathology included in the current work were scanned as part of their routine clinical care and gave informed written consent for the re-use of their data. The ethical committee of the Cantone of Zürich approved the prospective and retrospective studies that collected and analysed the MRI data (Decision numbers: 2017-00885, 2016-01019, 2017-00167), and a waiver for an ethical approval was acquired for the release of an irreversibly anonymized dataset.
 
 
-
+![Feta Image](./images/image-feta.png)
 
 ## Environment
 To create the environment `neurosegmentation`, run the following command:
@@ -176,17 +180,26 @@ data/
 
 Now we can switch to the nnUNet framework to train and evaluate the models.
 
-## Guideline on the data structure conventions
+## Guideline on the Data Structure Conventions
 
-The nnUNet framework requires a very specific way to name the files, so I have included the scripts.
-At the time I am writing this (2024-05-15), the guidelines are the following:
-- There are 3 folders:
-  - `nnUNet_raw`: Contains the raw data.
-  - `nnUNet_preprocessed`: Contains the preprocessed data.
-  - `nnUNet_results`: Contains the results of the nnUNet model.
-- in the `nnUNet_raw`, you need to identify the dataset with a number (1 for MindBoggle, 2 for DBB, 3 for DBB_augmented, 4 for Feta).
+The nnUNet framework requires a specific naming convention for the files. This guideline provides the necessary structure and naming conventions to follow. As of 2024-05-15, the guidelines are as follows:
 
-within the dataset folder, you need to have the following structure:
+### Folder Structure
+
+There are three main folders:
+
+- `nnUNet_raw`: Contains the raw data.
+- `nnUNet_preprocessed`: Contains the preprocessed data.
+- `nnUNet_results`: Contains the results of the nnUNet model.
+
+Within the `nnUNet_raw` folder, datasets are identified by a number:
+```
+- `1` for MindBoggle
+- `2` for DBB
+- `3` for DBB_augmented
+- `4` for Feta
+```
+Each dataset folder should have the following structure:
 
 ```bash
 nnUNet_raw/
@@ -194,26 +207,31 @@ nnUNet_raw/
 │   ├── imagesTr/
 │   ├── imagesTs/
 │   ├── labelsTr/
+└── dataset_2/
+    ├── imagesTr/
+    ...
 ```
 
-within the "imagesTr" there is a strict naming convention:
+Naming Convention
+Within the imagesTr folder, filenames must follow a strict naming convention:
 
 file_name_patient_id_modality_id
 
-A few examples:
+`Examples:`
 
 mindboggle_0010_0000.nii.gz
 
-means that its subject id 10, with modality 0 (usually modality 0 is T1).
+Subject ID: 10
+Modality: 0 (usually T1)
+mindboggle_0010_0001.nii.gz
 
-So you can have for example:
-mindboggle_0010_0000.nii.gz (subject id, modality T1)
-mindboggle_0010_0001.nii.gz (subject id 10, but different modality, for example T2)
-mindboggle_0011_0000.nii.gz (subject id 11, modality T1)
+Subject ID: 10
+Modality: 1 (for example, T2)
+mindboggle_0011_0000.nii.gz
 
-I distilled the essential here, but the nnunet framework is updated regularly, so I advise you to check their github repository:
-
-[nnUNetV2](https://github.com/MIC-DKFZ/nnUNet)
+Subject ID: 11
+Modality: 0 (T1)
+For more detailed and updated guidelines, please check the nnUNet GitHub repository:
 
 
 ## Helper functions

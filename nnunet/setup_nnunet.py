@@ -178,7 +178,6 @@ def setup_dataset(dataset_name, input_path, segmentation_path, overwrite=False):
     dataset_id_map = {
         "mindboggle": 1,
         "dbb": 2,
-        "dbb_augmented": 3,
         "feta": 4
     }
     dataset_id = dataset_id_map[dataset_name]
@@ -204,7 +203,6 @@ def setup_dataset(dataset_name, input_path, segmentation_path, overwrite=False):
     json_setup_functions = {
         "mindboggle": setup_mindboggle_json,
         "dbb": setup_dbb_json,
-        "dbb_augmented": setup_dbb_augmented_json,
         "feta": setup_feta_json
     }
     json_setup_functions[dataset_name](dataset_folder)
@@ -265,7 +263,6 @@ def main():
     parser = ArgumentParser(description="Setup nnU-Net structure and manage specific datasets.")
     parser.add_argument("--mindboggle", action="store_true", help="Setup for the Mindboggle dataset")
     parser.add_argument("--dbb", action="store_true", help="Setup for the DBB dataset")
-    parser.add_argument("--dbb_augmented", action="store_true", help="Setup for the DBB_augmented dataset")
     parser.add_argument("--feta", action="store_true", help="Setup for the Feta dataset")
     parser.add_argument("-o", "--overwrite", action="store_true", help="Overwrite existing files")
     args = parser.parse_args()
@@ -285,7 +282,6 @@ def main():
     dataset_name_map = {
         "mindboggle": 1,
         "dbb": 2,
-        "dbb_augmented": 3,
         "feta": 4
     }
 
