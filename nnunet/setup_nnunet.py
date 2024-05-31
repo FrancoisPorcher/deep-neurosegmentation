@@ -99,7 +99,7 @@ def setup_dbb_json(dataset_folder):
             "Brain Stem": 5,
             "Cerebellum": 6
         },
-        "numTraining": 954,
+        "numTraining": 953,
         "file_ending": ".nii.gz",
         "overwrite_image_reader_writer": "SimpleITKIO"
     }
@@ -109,8 +109,6 @@ def setup_dbb_json(dataset_folder):
         json.dump(data, json_file, indent=4)
 
     print(f"dataset.json created at {json_path}")
-
-
 
 def setup_feta_json(dataset_folder):
     """
@@ -124,7 +122,7 @@ def setup_feta_json(dataset_folder):
             "0": "T2"
         },
         "labels": {
-            "background and non-brain tissue": 0,
+            "background": 0,
             "cerebrospinal fluid": 1,
             "gray matter": 2,
             "white matter": 3,
@@ -265,10 +263,11 @@ def main():
     parser.add_argument("--dbb", action="store_true", help="Setup for the DBB dataset")
     parser.add_argument("--feta", action="store_true", help="Setup for the Feta dataset")
     parser.add_argument("-o", "--overwrite", action="store_true", help="Overwrite existing files")
+    parser.add_argument("--config", type=str, default='/home/fp427/rds/rds-cam-segm-7tts6phZ4tw/deep-neurosegmentation/config.ini', help="Path to the config file")
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config_path = '/home/fp427/rds/rds-cam-segm-7tts6phZ4tw/deep-neurosegmentation/config.ini'
+    config_path = args.config
     config.read(config_path)
 
     global raw_folder

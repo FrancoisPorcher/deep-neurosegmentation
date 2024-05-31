@@ -218,6 +218,12 @@ Or if you want to overwrite a specific dataset:
 python setup_nnunet.py --mindboggle --dbb -o
 ```
 
+By default, the `setup_nnunet.py` script will use the `config.ini` file located at `/home/fp427/rds/rds-cam-segm-7tts6phZ4tw/deep-neurosegmentation/config.ini`. If you want to add a custom location you can with:
+
+```bash
+python script_name.py --config /path/to/custom/config.ini --mindboggle --overwrite
+```
+
 ## Setting up the environment variables for nnunet
 
 Before running the nnUNet commands, you need to set up the environment variables.
